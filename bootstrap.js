@@ -7,10 +7,10 @@
 //Cu.import("resource://gre/modules/WebChannel.jsm");
 
 function install() {
-  console.log('installing');
+  console.error('installing');
 }
 function uninstall() {
-  console.log('uninstalling');
+  console.error('uninstalling');
 }
 
 // startup is called:
@@ -18,6 +18,7 @@ function uninstall() {
 // - when extension becomes enabled via addons window
 // - when FF starts, if the extension is enabled
 function startup(data, reason) {
+  console.error('startup called');
   // define the app namespace
   window.UNIVSEARCH = window.UNIVSEARCH || {};
 
@@ -71,6 +72,7 @@ function startup(data, reason) {
   goButton.setAttribute('onclick', 'UNIVSEARCH.goButtonClick(); ' + UNIVSEARCH.replaced.goButtonClick);
 
   // TODO add history dropmarker stanza
+  console.log('startup exiting');
 }
 
 // shutdown is called:
