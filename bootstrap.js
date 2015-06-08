@@ -1,6 +1,11 @@
 
 'use strict';
 
+var EXPORTED_SYMBOLS = ['UniversalSearch'];
+
+// define the app namespace
+var UniversalSearch = UniversalSearch || {};
+
 // TODO require is undefined?
 // var {Cc, Ci, Cu} = require("chrome");
 //Cu.import("resource://gre/modules/Services.jsm");
@@ -13,14 +18,13 @@ function uninstall() {
   console.error('uninstalling');
 }
 
+
 // startup is called:
 // - when extension is first installed (assuming it's enabled)
 // - when extension becomes enabled via addons window
 // - when FF starts, if the extension is enabled
 function startup(data, reason) {
   console.error('startup called');
-  // define the app namespace
-  window.UNIVSEARCH = window.UNIVSEARCH || {};
 
   // hide the search bar
   Cu.import('chrome://universalsearch-modules/ToolbarButtonManager.jsm');
@@ -32,7 +36,7 @@ function startup(data, reason) {
   popup.setAttribute("id", 'PopupAutoCompleteRichResultUnivSearch');
   document.getElementById('PopupAutoCompleteRichResult').parentElement.appendChild(popup);
   var urlbar = document.getElementById('urlbar');
-  UNIVSEARCH.elements = {
+  UniversalSearch.elements = {
     popup: popup,
     urlbar: urlbar
   };
@@ -48,28 +52,28 @@ function startup(data, reason) {
   // TODO dynamically set the src on the iframe, then set up messaging when it loads
 
   // override some stuff on the urlbar
-  UNIVSEARCH.replaced = {};
+  UniversalSearch.replaced = {};
   // TODO: implement this...
-  // UNIVSEARCH.replaced.autocompletesearch = urlbar.getAttribute('autocompletesearch');
+  // UniversalSearch.replaced.autocompletesearch = urlbar.getAttribute('autocompletesearch');
   // urlbar.setAttribute('autocompletesearch', 'univ-search-results');
-  UNIVSEARCH.replaced.autocompletepopup = urlbar.getAttribute('autocompletepopup');
+  UniversalSearch.replaced.autocompletepopup = urlbar.getAttribute('autocompletepopup');
   urlbar.setAttribute('autocompletepopup', 'PopupAutoCompleteRichResultUnivSearch');
 
   // add urlbar and gBrowser.tabContainer listeners
   // obviously we won't put everything top-level on the app namespace, just sketching here
-  popup.addEventListener('popuphiding', UNIVSEARCH.onPopupHiding);
-  popup.addEventListener('popupshowing', UNIVSEARCH.onPopupShowing);
-  gBrowser.tabContainer.addEventListener('TabSelect', UNIVSEARCH.onTabSelect);
-  gBrowser.tabContainer.addEventListener('TabOpen', UNIVSEARCH.onTabOpen);
-  gBrowser.tabContainer.addEventListener('TabClose', UNIVSEARCH.onTabClose);
+  popup.addEventListener('popuphiding', UniversalSearch.onPopupHiding);
+  popup.addEventListener('popupshowing', UniversalSearch.onPopupShowing);
+  gBrowser.tabContainer.addEventListener('TabSelect', UniversalSearch.onTabSelect);
+  gBrowser.tabContainer.addEventListener('TabOpen', UniversalSearch.onTabOpen);
+  gBrowser.tabContainer.addEventListener('TabClose', UniversalSearch.onTabClose);
   // TODO add urlbar listeners
 
   // deal with the "go button" (right arrow that appears when you type in the bar)
   var goButton = document.getElementById('urlbar-go-button');
-  UNIVSEARCH.elements.goButton = goButton;
-  UNIVSEARCH.replaced.goButtonClick = goButton.getAttribute('onclick');
+  UniversalSearch.elements.goButton = goButton;
+  UniversalSearch.replaced.goButtonClick = goButton.getAttribute('onclick');
   // add our handler, fall through to the existing go button behavior
-  goButton.setAttribute('onclick', 'UNIVSEARCH.goButtonClick(); ' + UNIVSEARCH.replaced.goButtonClick);
+  goButton.setAttribute('onclick', 'UniversalSearch.goButtonClick(); ' + UniversalSearch.replaced.goButtonClick);
 
   // TODO add history dropmarker stanza
   console.log('startup exiting');
