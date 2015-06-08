@@ -23,7 +23,7 @@ function startup(data, reason) {
   window.UNIVSEARCH = window.UNIVSEARCH || {};
 
   // hide the search bar
-  Cu.import('chrome://the-addon/ToolbarButtonManager.jsm');
+  Cu.import('chrome://universalsearch-modules/ToolbarButtonManager.jsm');
   ToolbarButtonManager.hideToolbarElement(window.document, 'search-container');
 
   // create the popup element
@@ -40,7 +40,7 @@ function startup(data, reason) {
   // dynamically append the stylesheet which binds the autocomplete popup
   var stylesheet = window.document.createElementNS('http://www.w3.org/1999/xhtml', 'h:link');
   stylesheet.rel = 'stylesheet';
-  stylesheet.href = 'chrome://the-addon/content/skin/binding.css';
+  stylesheet.href = 'chrome://universalsearch/content/skin/binding.css';
   stylesheet.type = 'text/css';
   stylesheet.style.display = 'none';
   window.document.documentElement.appendChild(stylesheet);
