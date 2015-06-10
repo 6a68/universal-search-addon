@@ -13,8 +13,11 @@
            to avoid the window load event firing before our handler attached.
            I don't know if that's necessary here, but we'll just see if doing
            the existing thing works. -->
-      <xul:browser anonid="universal-search-iframe" type="content" height="416" minheight="416" flex="1" />
-      <children />
+      <!-- <xul:browser anonid="universal-search-iframe" type="content" height="416" minheight="416" flex="1" />
+      -->
+      <div xmlns="http://www.w3.org/1999/xhtml" anonid="its-alive">
+        it's alive!!!
+      </div>
     </content>
 
     <implementation implements="nsIAutoCompletePopup">
