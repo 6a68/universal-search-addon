@@ -49,6 +49,7 @@ UniversalSearch.prototype = {
     this.popup = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "panel");
     this.popup.setAttribute("type", 'autocomplete-richlistbox');
     this.popup.setAttribute("id", 'PopupAutoCompleteRichResultUnivSearch');
+    this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
     this.popupParent = document.getElementById('PopupAutoCompleteRichResult').parentElement;
     this.popupParent.appendChild(this.popup);
   
