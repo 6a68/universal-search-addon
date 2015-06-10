@@ -68,6 +68,10 @@ UniversalSearch.prototype = {
     // this._autocompletesearch = this.urlbar.getAttribute('autocompletesearch');
     // this.urlbar.setAttribute('autocompletesearch', 'univ-search-results');
 
+    // reload the urlbar element
+    this.urlbar && this.urlbar.parentNode &&
+      this.urlbar.parentNode.insertBefore(this.urlbar, this.urlbar.nextSibling);
+
     // add urlbar and tab event listeners
     // obviously we won't put everything top-level on the app namespace, just sketching here
     this.popup.addEventListener('popuphiding', this.handleEvent.bind(this));
