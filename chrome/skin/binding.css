@@ -1,3 +1,8 @@
+/* if the urlbar turns red, we know the CSS has loaded. then it's just a question of XBL bugs. */
+#urlbar {
+  background-color: red;
+}
+
 #PopupAutoCompleteRichResultUnivSearch {
   /* TODO figure out our addon name so this url will resolve */
   -moz-binding: url("chrome://universalsearch/content.xml#autocomplete-rich-result-popup-univ-search");

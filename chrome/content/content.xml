@@ -19,8 +19,8 @@
     <implementation implements="nsIAutoCompletePopup">
       <constructor><![CDATA[
         // grab a reference to the browser and pass it to JS
-        this.browserEl = document.getAnonymousElementByAttribute(this, "anonid", "universal-search-iframe");
-        UNIVSEARCH.elements.iframe = this.browserEl;
+        //this.browserEl = document.getAnonymousElementByAttribute(this, "anonid", "universal-search-iframe");
+        //UNIVSEARCH.elements.iframe = this.browserEl;
       ]]></constructor>
 
       <!-- not sure how much to put in the XBL methods,
