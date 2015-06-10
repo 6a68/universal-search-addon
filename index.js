@@ -7,6 +7,12 @@ var activeWindow = require('sdk/windows').browserWindows.activeWindow;
 var browserWindow = require('sdk/view/core').viewFor(activeWindow);
 var document = browserWindow.document;
 
+
+// global? nope?
+if (typeof activeWindow.FOO == 'undefined') {
+  Object.defineProperty(activeWindow, 'FOO', {configurable:true, value: "foo"});
+}
+
 function UniversalSearch() {
   this.iframeURL = 'https://mozilla.org';
 }
