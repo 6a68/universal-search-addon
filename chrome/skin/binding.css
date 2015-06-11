@@ -3,9 +3,8 @@
   background-color: red;
 }
 
-.PopupAutoCompleteRichResultUnivSearch {
-  /* TODO figure out our addon name so this url will resolve */
+#PopupAutoCompleteRichResultUnivSearch {
   -moz-binding: url("chrome://universalsearch/content.xml#autocomplete-rich-result-popup-univ-search");
-  /* TODO should we set the height here, or is setting it on the browser el enough? */
-  /* height: 416px; */
+  background-color: blue;
+  border: 5px solid green;
 }
