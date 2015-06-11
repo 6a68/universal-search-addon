@@ -25,64 +25,11 @@ UniversalSearch.prototype = {
     stylesheet.style.display = 'none';
     document.documentElement.appendChild(stylesheet);
 
-    this.popup = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "panel");
-    this.popup.setAttribute("type", 'autocomplete-richlistbox');
-    this.popup.setAttribute("id", 'whatever');
+    this.popup = document.getElementById('PopupAutoCompleteRichResult');
     this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
     this.popup._appendCurrentResult = function() {
       console.log('popup._appendCurrentResult');
     };
-    /*
-    this.popup.openPopup = function() {
-      console.log('openPopup called inside popup inside addon');
-    };
-    this.popup.openAutocompletePopup = function() {
-      console.log('openAutocompletePopup called inside addon');
-    };
-    */
-    this.popupParent = document.getElementById('PopupAutoCompleteRichResult').parentElement;
-    this.popupParent.appendChild(this.popup);
-  
-    this.iframe = document.getAnonymousElementByAttribute(this.popupParent, "anonid", "universal-search-iframe");
-    if (this.iframe) {
-      this.iframe.addEventListener('load', this.onLoaded.bind(this), true);
-      this.iframe.setAttribute('src', this.iframeURL);
-    }
-
-    // swap our popup for the existing one
-    this._autocompletepopup = this.urlbar.getAttribute('autocompletepopup');
-    this.urlbar.setAttribute('autocompletepopup', 'PopupAutoCompleteRichResultUnivSearch');
-
-    // TODO: implement the search IDL:
-    // this._autocompletesearch = this.urlbar.getAttribute('autocompletesearch');
-    // this.urlbar.setAttribute('autocompletesearch', 'univ-search-results');
-
-    // reload the urlbar element
-    setTimeout(function() {
-      this.urlbar && this.urlbar.parentNode &&
-        this.urlbar.parentNode.insertBefore(this.urlbar, this.urlbar.nextSibling);
-    }.bind(this), 0);
-
-    /*
-    setTimeout(function() {
-      this.popup.addEventListener('popuphiding', this.handleEvent.bind(this));
-      this.popup.addEventListener('popupshowing', this.handleEvent.bind(this));
-      tabs.on('open', this.handleEvent.bind(this));
-      tabs.on('close', this.handleEvent.bind(this));
-      tabs.on('activate', this.handleEvent.bind(this));
-      tabs.on('deactivate', this.handleEvent.bind(this));
-      // TODO add urlbar listeners
-
-      // deal with the "go button" (right arrow that appears when you type in the bar)
-      // TODO: neither the go button, nor the iframe, are ready. do we need to setTimeout?
-      this.goButton = document.getElementById('urlbar-go-button');
-      this._goButtonClick = this.goButton.getAttribute('onclick');
-      // add our handler, fall through to the existing go button behavior
-      this.goButton.setAttribute('onclick', 'UniversalSearch.goButtonClick(); ' + this._goButtonClick);
-
-      // TODO add history dropmarker stanza
-    }.bind(this), 0, this);
-    */
 
     console.log('exiting render');
   },
