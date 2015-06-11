@@ -16,6 +16,30 @@
           console.log('xbl constructor');
         ]]>
       </constructor>
+      <method name="openAutocompletePopup">
+        <parameter name="aInput"/>
+        <parameter name="aElement"/>
+        <body>
+          <![CDATA[
+          // initially the panel is hidden
+          // to avoid impacting startup / new window performance
+          aInput.popup.hidden = false;
+
+          // this method is defined on the base binding
+          this._openAutocompletePopup(aInput, aElement);
+        ]]></body>
+      </method>
+
+      <method name="onPopupClick">
+        <parameter name="aEvent"/>
+        <body>
+          <![CDATA[
+          // Ignore right-clicks
+          if (aEvent.button == 2)
+            return;
+        ]]></body>
+      </method>
+
     </implementation>
   </binding>
 </bindings>
