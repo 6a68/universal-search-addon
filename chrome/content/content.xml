@@ -17,6 +17,15 @@
         LOL.univSearch.renderPopupContents(this.div);
       ]]></constructor>
 
+      <method name="isReallyAttached">
+        <body>
+          <![CDATA[
+            return true;
+          ]]>
+        </body>
+      </method>
+
+
     </implementation>
   </binding>
 </bindings>
