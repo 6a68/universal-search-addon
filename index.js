@@ -99,9 +99,7 @@ UniversalSearch.prototype = {
   },
   // called by XBL when the popup is instantiated
   renderPopupContents: function(el) {
-    // render some text into the el, let's just see if this works at all.
     console.log('renderPopupContents');
-    el.innerHTML += ", hello js world";
   },
   handleEvent: function(evt) {
     console.log('caught an event: ' + evt.type);

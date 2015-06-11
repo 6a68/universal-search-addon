@@ -11,10 +11,7 @@
 
     <implementation >
       <constructor><![CDATA[
-        //console.log('custom XBL constructor')
-        this.div = document.getAnonymousElementByAttribute(this, 'anonid', 'universal-search-div');
-        this.div.innerHTML="hello xbl world";
-        LOL.univSearch.renderPopupContents(this.div);
+        LOL && LOL.univSearch && LOL.univSearch.renderPopupContents();
       ]]></constructor>
 
       <method name="isReallyAttached">
