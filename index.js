@@ -2,16 +2,11 @@ var {Cc, Ci, Cu} = require("chrome");
 var { setTimeout } = require('sdk/timers');
 var tabs = require('sdk/tabs');
 
-// let's try to get the chrome window, first
-var activeWindow = require('sdk/windows').browserWindows.activeWindow;
-var browserWindow = require('sdk/view/core').viewFor(activeWindow);
-var document = browserWindow.document;
-
-
-// global? nope?
-if (typeof activeWindow.FOO == 'undefined') {
-  Object.defineProperty(activeWindow, 'FOO', {configurable:true, value: "foo"});
-}
+// wasn't able to set a global using the sdk methods, hence, using Cc here
+var winMediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
+var window = winMediator.getMostRecentWindow('navigator:browser');
+var document = window.document;
+window.UNIVERSALSEARCH = {};
 
 function UniversalSearch() {
   this.iframeURL = 'https://mozilla.org';
@@ -98,7 +93,5 @@ UniversalSearch.prototype = {
   }
 }
 
-var univSearch = new UniversalSearch();
-univSearch.render();
-
-
+window.UNIVERSALSEARCH.univSearch = new UniversalSearch();
+window.UNIVERSALSEARCH.univSearch.render();
