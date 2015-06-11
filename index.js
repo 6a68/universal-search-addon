@@ -29,6 +29,12 @@ UniversalSearch.prototype = {
     this.popup.setAttribute("type", 'autocomplete-richlistbox');
     this.popup.setAttribute("id", 'PopupAutoCompleteRichResultUnivSearch');
     this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
+    this.popup.openPopup = function() {
+      console.log('openPopup called inside popup inside addon');
+    };
+    this.popup.openAutocompletePopup = function() {
+      console.log('openAutocompletePopup called inside addon');
+    };
     this.popupParent = document.getElementById('PopupAutoCompleteRichResult').parentElement;
     this.popupParent.appendChild(this.popup);
   
