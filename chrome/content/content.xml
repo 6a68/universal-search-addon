@@ -9,7 +9,7 @@
       <div xmlns="http://www.w3.org/1999/xhtml" anonid="universal-search-div"></div>
     </content>
 
-    <implementation implements="nsIAutoCompletePopup">
+    <implementation >
       <constructor><![CDATA[
         //console.log('custom XBL constructor')
         this.div = document.getAnonymousElementByAttribute(this, 'anonid', 'universal-search-div');
