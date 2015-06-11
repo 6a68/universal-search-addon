@@ -13,8 +13,9 @@
     <implementation >
        <constructor>
         <![CDATA[
-          // fill this in later
-          console.log('xbl constructor invoked');
+          // calling console.log seems to fail.
+          // let's try setting a random attribute on 'this'.
+          this.setAttribute('foo', 'bar');
         ]]>
       </constructor>
       <property name="selectedIndex"
