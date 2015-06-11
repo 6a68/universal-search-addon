@@ -14,6 +14,7 @@
        <constructor>
         <![CDATA[
           console.log('xbl constructor');
+          this.setAttribute('foo', 'bar');
         ]]>
       </constructor>
       <method name="openAutocompletePopup">
@@ -21,6 +22,7 @@
         <parameter name="aElement"/>
         <body>
           <![CDATA[
+          console.log('openAutocompletePopup');
           // initially the panel is hidden
           // to avoid impacting startup / new window performance
           aInput.popup.hidden = false;

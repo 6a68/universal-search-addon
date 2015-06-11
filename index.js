@@ -23,7 +23,8 @@ UniversalSearch.prototype = {
               .getService(Ci.nsIStyleSheetService);
     var ios = Cc["@mozilla.org/network/io-service;1"]
               .getService(Ci.nsIIOService);
-    var uri = ios.newURI('chrome://universalsearch/content/skin/binding.css', null, null);
+    var escapedCSS = encodeURIComponent('#PopupAutoCompleteRichResult.PopupAutoCompleteRichResultUnivSearch { -moz-binding: url("chrome://universalsearch/content/content.xml#autocomplete-rich-result-popup-univ-search"); }');
+    var uri = ios.newURI('data:text/css,' + escapedCSS, null, null);
     // TODO: performance thing: loadAndRegisterSheet is synchronous.
     //       However, the IDL doesn't mention any async alternative.
     sss.loadAndRegisterSheet(uri, sss.USER_SHEET);
