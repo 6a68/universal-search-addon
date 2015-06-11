@@ -18,12 +18,15 @@ UniversalSearch.prototype = {
     console.log("entering render");
     this.urlbar = document.getElementById('urlbar');
 
-    var stylesheet = document.createElementNS('http://www.w3.org/1999/xhtml', 'h:link');
-    stylesheet.rel = 'stylesheet';
-    stylesheet.href = 'chrome://universalsearch/content/skin/binding.css';
-    stylesheet.type = 'text/css';
-    stylesheet.style.display = 'none';
-    document.documentElement.appendChild(stylesheet);
+    // use the Stylesheet Service to load in the CSS containing the -moz-binding XBL magic
+    var sss = Cc["@mozilla.org/content/style-sheet-service;1"]
+              .getService(Ci.nsIStyleSheetService);
+    var ios = Cc["@mozilla.org/network/io-service;1"]
+              .getService(Ci.nsIIOService);
+    var uri = ios.newURI('chrome://universalsearch/content/skin/binding.css', null, null);
+    // TODO: performance thing: loadAndRegisterSheet is synchronous.
+    //       However, the IDL doesn't mention any async alternative.
+    sss.loadAndRegisterSheet(uri, sss.USER_SHEET);
 
     this.popup = document.getElementById('PopupAutoCompleteRichResult');
     this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
