@@ -26,15 +26,28 @@ UniversalSearch.prototype = {
     document.documentElement.appendChild(stylesheet);
 
     this.popup = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "panel");
+    // this is really weird.
+    // a popup with this type should have the autocomplete popup XBL
+    // bound to it via this rule in xul.css:
+    //
+    //
+    // panel[type="autocomplete-richlistbox"] {
+    //   -moz-binding: url("chrome://global/content/bindings/autocomplete.xml#autocomplete-rich-result-popup");
+    // }
+    //  (https://dxr.allizom.org/mozilla-central/source/toolkit/content/xul.css#842 )
+    // 
+    // so, does it?
     this.popup.setAttribute("type", 'autocomplete-richlistbox');
-    this.popup.setAttribute("id", 'PopupAutoCompleteRichResultUnivSearch');
-    this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
+    this.popup.setAttribute("id", 'whatever');
+    //this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
+    /*
     this.popup.openPopup = function() {
       console.log('openPopup called inside popup inside addon');
     };
     this.popup.openAutocompletePopup = function() {
       console.log('openAutocompletePopup called inside addon');
     };
+    */
     this.popupParent = document.getElementById('PopupAutoCompleteRichResult').parentElement;
     this.popupParent.appendChild(this.popup);
   
