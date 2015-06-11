@@ -4,7 +4,7 @@
           xmlns:html="http://www.w3.org/1999/xhtml"
           xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
           xmlns:xbl="http://www.mozilla.org/xbl">
-  <binding id="autocomplete-rich-result-popup-univ-search" extends="chrome://global/content/bindings/autocomplete.xml#autocomplete-rich-result-popup" >
+  <binding id="autocomplete-rich-result-popup-univ-search" extends="chrome://browser/content/urlbarBindings.xml#urlbar-rich-result-popup" >
     <content ignorekeys="false" level="top" consumeoutsideclicks="false">
       <html:div anonid="universal-search-div"></div>
       <children />
@@ -13,43 +13,9 @@
     <implementation >
        <constructor>
         <![CDATA[
-          // calling console.log seems to fail.
-          // let's try setting a random attribute on 'this'.
-          this.setAttribute('foo', 'bar');
+          console.log('xbl constructor');
         ]]>
       </constructor>
-      <property name="selectedIndex"
-                onget="return 0;">
-        <setter>
-          <![CDATA[
-            // override default FF behavior with nothingness
-          ]]>
-        </setter>
-      </property>
-      <method name="_invalidate">
-        <body><![CDATA[
-          this._appendCurrentResult();
-        ]]></body>
-      </method>
-      <method name="_openAutocompletePopup">
-        <parameter name="aInput"/>
-        <parameter name="aElement"/>
-        <body><![CDATA[
-          if (!this.mPopupOpen) {
-            this.mInput = aInput;
-            this._invalidate();
-
-            var width = aElement.getBoundingClientRect().width;
-            this.setAttribute("width", width > 500 ? width : 500);
-            this.openPopup(aElement, "after_start", 0, 0, false, true);
-          }
-        ]]></body>
-      </method>
-      <method name="_appendCurrentResult">
-        <body><![CDATA[
-          console.log('xbl _appendCurrentResult invoked');
-        ]]></body>
-      </method>
     </implementation>
   </binding>
 </bindings>
