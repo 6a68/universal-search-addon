@@ -6,23 +6,49 @@
           xmlns:xbl="http://www.mozilla.org/xbl">
   <binding id="autocomplete-rich-result-popup-univ-search" extends="chrome://global/content/bindings/autocomplete.xml#autocomplete-rich-result-popup" >
     <content ignorekeys="false" level="top" consumeoutsideclicks="false">
-      <div xmlns="http://www.w3.org/1999/xhtml" anonid="universal-search-div"></div>
+      <html:div anonid="universal-search-div"></div>
+      <children />
     </content>
 
     <implementation >
-      <constructor><![CDATA[
-        LOL && LOL.univSearch && LOL.univSearch.renderPopupContents();
-      ]]></constructor>
-
-      <method name="isReallyAttached">
-        <body>
+       <constructor>
+        <![CDATA[
+          // fill this in later
+          console.log('xbl constructor invoked');
+        ]]>
+      </constructor>
+      <property name="selectedIndex"
+                onget="return 0;">
+        <setter>
           <![CDATA[
-            return true;
+            // override default FF behavior with nothingness
           ]]>
-        </body>
+        </setter>
+      </property>
+      <method name="_invalidate">
+        <body><![CDATA[
+          this._appendCurrentResult();
+        ]]></body>
       </method>
+      <method name="_openAutocompletePopup">
+        <parameter name="aInput"/>
+        <parameter name="aElement"/>
+        <body><![CDATA[
+          if (!this.mPopupOpen) {
+            this.mInput = aInput;
+            this._invalidate();
 
-
+            var width = aElement.getBoundingClientRect().width;
+            this.setAttribute("width", width > 500 ? width : 500);
+            this.openPopup(aElement, "after_start", 0, 0, false, true);
+          }
+        ]]></body>
+      </method>
+      <method name="_appendCurrentResult">
+        <body><![CDATA[
+          console.log('xbl _appendCurrentResult invoked');
+        ]]></body>
+      </method>
     </implementation>
   </binding>
 </bindings>

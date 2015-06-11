@@ -26,20 +26,12 @@ UniversalSearch.prototype = {
     document.documentElement.appendChild(stylesheet);
 
     this.popup = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "panel");
-    // this is really weird.
-    // a popup with this type should have the autocomplete popup XBL
-    // bound to it via this rule in xul.css:
-    //
-    //
-    // panel[type="autocomplete-richlistbox"] {
-    //   -moz-binding: url("chrome://global/content/bindings/autocomplete.xml#autocomplete-rich-result-popup");
-    // }
-    //  (https://dxr.allizom.org/mozilla-central/source/toolkit/content/xul.css#842 )
-    // 
-    // so, does it?
     this.popup.setAttribute("type", 'autocomplete-richlistbox');
     this.popup.setAttribute("id", 'whatever');
-    //this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
+    this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
+    this.popup._appendCurrentResult = function() {
+      console.log('popup._appendCurrentResult');
+    };
     /*
     this.popup.openPopup = function() {
       console.log('openPopup called inside popup inside addon');
@@ -66,9 +58,12 @@ UniversalSearch.prototype = {
     // this.urlbar.setAttribute('autocompletesearch', 'univ-search-results');
 
     // reload the urlbar element
-    this.urlbar && this.urlbar.parentNode &&
-      this.urlbar.parentNode.insertBefore(this.urlbar, this.urlbar.nextSibling);
+    setTimeout(function() {
+      this.urlbar && this.urlbar.parentNode &&
+        this.urlbar.parentNode.insertBefore(this.urlbar, this.urlbar.nextSibling);
+    }.bind(this), 0);
 
+    /*
     setTimeout(function() {
       this.popup.addEventListener('popuphiding', this.handleEvent.bind(this));
       this.popup.addEventListener('popupshowing', this.handleEvent.bind(this));
@@ -87,6 +82,7 @@ UniversalSearch.prototype = {
 
       // TODO add history dropmarker stanza
     }.bind(this), 0, this);
+    */
 
     console.log('exiting render');
   },
