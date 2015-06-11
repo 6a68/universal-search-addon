@@ -3,7 +3,7 @@
   background-color: red;
 }
 
-#PopupAutoCompleteRichResultUnivSearch {
+.PopupAutoCompleteRichResultUnivSearch {
   -moz-binding: url("chrome://universalsearch/content/content.xml#autocomplete-rich-result-popup-univ-search");
   background-color: blue;
   border: 5px solid green;
