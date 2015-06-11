@@ -6,7 +6,7 @@ var tabs = require('sdk/tabs');
 var winMediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 var window = winMediator.getMostRecentWindow('navigator:browser');
 var document = window.document;
-window.UNIVERSALSEARCH = {};
+window.WAT = {};
 
 function UniversalSearch() {
   this.iframeURL = 'https://mozilla.org';
@@ -50,7 +50,6 @@ UniversalSearch.prototype = {
     this.urlbar && this.urlbar.parentNode &&
       this.urlbar.parentNode.insertBefore(this.urlbar, this.urlbar.nextSibling);
 
-
     setTimeout(function() {
       this.popup.addEventListener('popuphiding', this.handleEvent.bind(this));
       this.popup.addEventListener('popupshowing', this.handleEvent.bind(this));
@@ -77,21 +76,43 @@ UniversalSearch.prototype = {
     // TODO NEXT: inject the frame script into the frame
     // set up messaging with the frame script
     // store an object pointer to the message channel
-    this.iframe.removeEventListener('load', onLoaded.bind(this), true);
-    this.iframe.messageManager.loadFrameScript(self.data.url('frameScript.js'), true);
-    this.iframe.messageManager.sendAsyncMessage('ping');
-    this.iframe.messageManager.addMessageListener('pong', function(msg) {
-      console.log('got a message from content: ' + message.name)
-    });
     console.log('exiting onLoaded');
+  },
+  // called by XBL when the popup is instantiated
+  renderPopupContents: function() {
+    console.log('renderPopupContents');
+    this.iframe= document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "browser");
+
+    function onFrameLoaded() {
+      console.log('onFrameLoaded');
+      this.iframe.removeEventListener('load', onFrameLoaded.bind(this), true);
+      this.iframe.messageManager.loadFrameScript(self.data.url('frameScript.js'), true);
+      this.iframe.messageManager.sendAsyncMessage('ping');
+      this.iframe.messageManager.addMessageListener('pong', function(msg) {
+        console.log('got a message from content: ' + message.name)
+      });
+    }
+
+    this.iframe.addEventListener('load', onFrameLoaded.bind(this), true);
+    this.iframe.setAttribute('id', 'universal-search-iframe--dundundun');
+    this.iframe.setAttribute('height', 416);
+    this.iframe.setAttribute('minheight', 416);
+    // maybe try setting popup.innerHTML if this doesn't work?
+    this.popup.innerHTML = this.iframe;
+    setTimeout(function() {
+      console.log('renderPopupContents setTimeout');
+      this.iframe.setAttribute('src', this.iframeURL);
+    }.bind(this), 0);
   },
   handleEvent: function(evt) {
     console.log('caught an event: ' + evt.type);
   },
   goButtonClick: function(evt) {
     console.log('go button was clicked');
+  },
+  _appendCurrentResult: function() {
   }
 }
 
-window.UNIVERSALSEARCH.univSearch = new UniversalSearch();
-window.UNIVERSALSEARCH.univSearch.render();
+window.WAT.univSearch = new UniversalSearch();
+window.WAT.univSearch.render();
