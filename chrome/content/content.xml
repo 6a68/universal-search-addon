@@ -5,21 +5,16 @@
           xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
           xmlns:xbl="http://www.mozilla.org/xbl">
   <binding id="autocomplete-rich-result-popup-univ-search" extends="chrome://global/content/bindings/autocomplete.xml#autocomplete-rich-result-popup" >
-    <!-- TODO: could we just load the CSS with moz-binding here, instead of
-         dynamically appending it? -->
     <content ignorekeys="false" level="top" consumeoutsideclicks="false">
-      <!-- TODO: 
-           in regular gecko-dev, we had to dynamically set browser.src
-           to avoid the window load event firing before our handler attached.
-           I don't know if that's necessary here, but we'll just see if doing
-           the existing thing works. -->
-      <xul:browser anonid="universal-search-iframe" type="content" height="416" minheight="416" flex="1" />
-      <children />
+      <div xmlns="http://www.w3.org/1999/xhtml" anonid="universal-search-div"></div>
     </content>
 
     <implementation implements="nsIAutoCompletePopup">
       <constructor><![CDATA[
-        console.log('custom XBL constructor')
+        //console.log('custom XBL constructor')
+        this.div = document.getAnonymousElementByAttribute(this, 'anonid', 'universal-search-div');
+        this.div.innerHTML="hello xbl world";
+        LOL.univSearch.renderPopupContents(this.div);
       ]]></constructor>
 
     </implementation>

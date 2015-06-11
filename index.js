@@ -6,7 +6,7 @@ var tabs = require('sdk/tabs');
 var winMediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 var window = winMediator.getMostRecentWindow('navigator:browser');
 var document = window.document;
-window.WAT = {};
+window.LOL = {};
 
 function UniversalSearch() {
   this.iframeURL = 'https://mozilla.org';
@@ -79,30 +79,10 @@ UniversalSearch.prototype = {
     console.log('exiting onLoaded');
   },
   // called by XBL when the popup is instantiated
-  renderPopupContents: function() {
+  renderPopupContents: function(el) {
+    // render some text into the el, let's just see if this works at all.
     console.log('renderPopupContents');
-    this.iframe= document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "browser");
-
-    function onFrameLoaded() {
-      console.log('onFrameLoaded');
-      this.iframe.removeEventListener('load', onFrameLoaded.bind(this), true);
-      this.iframe.messageManager.loadFrameScript(self.data.url('frameScript.js'), true);
-      this.iframe.messageManager.sendAsyncMessage('ping');
-      this.iframe.messageManager.addMessageListener('pong', function(msg) {
-        console.log('got a message from content: ' + message.name)
-      });
-    }
-
-    this.iframe.addEventListener('load', onFrameLoaded.bind(this), true);
-    this.iframe.setAttribute('id', 'universal-search-iframe--dundundun');
-    this.iframe.setAttribute('height', 416);
-    this.iframe.setAttribute('minheight', 416);
-    // maybe try setting popup.innerHTML if this doesn't work?
-    this.popup.innerHTML = this.iframe;
-    setTimeout(function() {
-      console.log('renderPopupContents setTimeout');
-      this.iframe.setAttribute('src', this.iframeURL);
-    }.bind(this), 0);
+    el.innerHTML += ", hello js world";
   },
   handleEvent: function(evt) {
     console.log('caught an event: ' + evt.type);
@@ -114,5 +94,5 @@ UniversalSearch.prototype = {
   }
 }
 
-window.WAT.univSearch = new UniversalSearch();
-window.WAT.univSearch.render();
+window.LOL.univSearch = new UniversalSearch();
+window.LOL.univSearch.render();
