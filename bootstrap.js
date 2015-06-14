@@ -18,11 +18,10 @@ UniversalSearch.prototype = {
     console.log("entering render");
     var doc = win.document;
     this.urlbar = doc.getElementById('urlbar');
-    this.popup = doc.getElementById('PopupAutoCompleteRichResult');
 
     var sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
     var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-    var escapedCSS = encodeURIComponent('#PopupAutoCompleteRichResult.PopupAutoCompleteRichResultUnivSearch { ' +
+    var escapedCSS = encodeURIComponent('#PopupAutoCompleteRichResultUnivSearch { ' +
       '-moz-binding: url("chrome://universalsearch/content/content.xml#autocomplete-rich-result-popup-univ-search"); }');
     var uri = ios.newURI('data:text/css,' + escapedCSS, null, null);
     // TODO: performance thing: loadAndRegisterSheet is synchronous.
@@ -30,15 +29,24 @@ UniversalSearch.prototype = {
     console.log('typeof sss: ' + typeof sss);
     sss.loadAndRegisterSheet(uri, sss.USER_SHEET);
 
-    console.log('typeof this.popup: ' + typeof this.popup);
-    if (this.popup) {
-      this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
-      this.popup._appendCurrentResult = function() {
-        console.log('popup._appendCurrentResult');
-      };
-    } else {
-      console.log('this.popup is falsy. window.doc.readyState is ' + win.document && win.document.readyState);
-    }
+    this.popup = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "panel");
+    this.popup.setAttribute("type", 'autocomplete-richlistbox');
+    this.popup.setAttribute('id', 'PopupAutoCompleteRichResultUnivSearch');
+    this.popup._appendCurrentResult = function() {
+      console.log('popup._appendCurrentResult');
+    };
+    this.popup.openPopup = function() {
+      console.log('openPopup called inside popup inside addon');
+    };
+    this.popup.openAutocompletePopup = function() {
+      console.log('openAutocompletePopup called inside addon');
+    };
+    this.popupParent = doc.getElementById('PopupAutoCompleteRichResult').parentElement;
+    this.popupParent.appendChild(this.popup);
+
+    this._autocompletepopup = this.urlbar.getAttribute('autocompletepopup');
+    this.urlbar.setAttribute('autocompletesearch', 'univ-search-results');
+
   },
   onLoaded: function() {
     console.log('entering onLoaded');
