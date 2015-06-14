@@ -31,10 +31,14 @@ UniversalSearch.prototype = {
     sss.loadAndRegisterSheet(uri, sss.USER_SHEET);
 
     console.log('typeof this.popup: ' + typeof this.popup);
-    this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
-    this.popup._appendCurrentResult = function() {
-      console.log('popup._appendCurrentResult');
-    };
+    if (this.popup) {
+      this.popup.setAttribute("class", 'PopupAutoCompleteRichResultUnivSearch');
+      this.popup._appendCurrentResult = function() {
+        console.log('popup._appendCurrentResult');
+      };
+    } else {
+      console.log('this.popup is falsy. window.doc.readyState is ' + win.document && win.document.readyState);
+    }
   },
   onLoaded: function() {
     console.log('entering onLoaded');
@@ -101,7 +105,16 @@ function startup(aData, aReason) {
   var windows = winMediator.getEnumerator('navigator:browser');
   while (windows.hasMoreElements()) {
     let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
-    mediatorListener.render(domWindow);
+    // it seems like the dom is sometimes not yet ready, handle this for render
+    console.log('iterating over windows. the readystate is ' + domWindow.document && domWindow.document.readyState);
+    if (domWindow.document.readyState == 'complete') {
+      console.log('startup found a ready window, rendering into it');
+      mediatorListener.render(domWindow);
+    } else {
+      console.log('startup found a non-ready window, adding an onload handler');
+      // mediatorListener handles adding the 'load' listener
+      mediatorListener.onOpenWindow(domWindow);
+    }
   }
   console.log('exiting universal-search-addon startup');
 };
