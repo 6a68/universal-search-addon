@@ -47,6 +47,14 @@ UniversalSearch.prototype = {
     this._autocompletepopup = this.urlbar.getAttribute('autocompletepopup');
     this.urlbar.setAttribute('autocompletesearch', 'univ-search-results');
 
+    // reload the urlbar element
+    win.setTimeout(function() {
+      console.log('inside setTimeout callback');
+      this.urlbar && this.urlbar.parentNode &&
+      this.urlbar.parentNode.insertBefore(this.urlbar, this.urlbar.nextSibling);
+    }.bind(this), 0);
+
+
   },
   onLoaded: function() {
     console.log('entering onLoaded');
