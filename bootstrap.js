@@ -34,10 +34,28 @@ UniversalSearch.prototype = {
     this.popup.setAttribute('id', 'PopupAutoCompleteRichResultUnivSearch');
     this.popup._appendCurrentResult = function() {
       console.log('popup._appendCurrentResult');
+      // get the controller and pull data from it
+      // insert a container node and child nodes
+      // or
+      // insert a browser
+      // set its src to a frame page
+      // inject a content script or frame script (and init a channel)
+      // send the data over as a channel message
+      // render the data. ugh.
     };
     this.popup.openPopup = function() {
       console.log('openPopup called inside popup inside addon');
     };
+    this.popup._invalidate = function() {
+      // try using this function to set the contents of the popup.
+      var box = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "richlistbox");
+      var item = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "richlistitem");
+      var desc = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "description");
+      desc.value = "this is a description";
+      item.appendChild(desc);
+      box.appendChild(item);
+      popup.appendChild(box);
+    }.bind(this);
     this.popup.openAutocompletePopup = function() {
       console.log('openAutocompletePopup called inside addon');
     };
@@ -72,8 +90,6 @@ UniversalSearch.prototype = {
   },
   goButtonClick: function(evt) {
     console.log('go button was clicked');
-  },
-  _appendCurrentResult: function() {
   }
 };
 
