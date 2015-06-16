@@ -19,43 +19,18 @@ UniversalSearch.prototype = {
     var doc = win.document;
     this.urlbar = doc.getElementById('urlbar');
 
-    var sss = Cc["@mozilla.org/content/style-sheet-service;1"].getService(Ci.nsIStyleSheetService);
-    var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-    var escapedCSS = encodeURIComponent('#PopupAutoCompleteRichResultUnivSearch { ' +
-      '-moz-binding: url("chrome://universalsearch/content/content.xml#autocomplete-rich-result-popup-univ-search"); }');
-    var uri = ios.newURI('data:text/css,' + escapedCSS, null, null);
-    // TODO: performance thing: loadAndRegisterSheet is synchronous.
-    //       However, the IDL doesn't mention any async alternative.
-    console.log('typeof sss: ' + typeof sss);
-    sss.loadAndRegisterSheet(uri, sss.USER_SHEET);
-
     this.popup = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "panel");
     this.popup.setAttribute("type", 'autocomplete-richlistbox');
     this.popup.setAttribute('id', 'PopupAutoCompleteRichResultUnivSearch');
     this.popup._appendCurrentResult = function() {
       console.log('popup._appendCurrentResult');
-      // get the controller and pull data from it
-      // insert a container node and child nodes
-      // or
-      // insert a browser
-      // set its src to a frame page
-      // inject a content script or frame script (and init a channel)
-      // send the data over as a channel message
-      // render the data. ugh.
     };
     this.popup.openPopup = function() {
       console.log('openPopup called inside popup inside addon');
     };
     this.popup._invalidate = function() {
-      // try using this function to set the contents of the popup.
-      var box = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "richlistbox");
-      var item = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "richlistitem");
-      var desc = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "description");
-      desc.value = "this is a description";
-      item.appendChild(desc);
-      box.appendChild(item);
-      popup.appendChild(box);
-    }.bind(this);
+      console.log('_invalidate called inside popup inside addon');
+    };
     this.popup.openAutocompletePopup = function() {
       console.log('openAutocompletePopup called inside addon');
     };
