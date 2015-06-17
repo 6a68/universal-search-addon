@@ -7,131 +7,70 @@ var Cc = Components.classes;
 var Ci = Components.interfaces;
 var Cu = Components.utils;
 Cu.import('resource://gre/modules/XPCOMUtils.jsm');
+Cu.import('resource://gre/modules/Services.jsm');
 
-function UniversalSearch() {
-  this.iframeURL = 'https://mozilla.org';
+if(window.FOO === undefined) {
+    Object.defineProperty( window, 'FOO', {configurable:true, value:{}});
+} else {
+    window.FOO = window.FOO || {};
 }
-UniversalSearch.prototype = {
-  constructor: UniversalSearch,
-  // TODO: hide the second search bar with ToolbarButtonManager
-  render: function(win) {
-    console.log("entering render");
-    var doc = win.document;
-    this.urlbar = doc.getElementById('urlbar');
-
-    this.popup = doc.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "panel");
-    this.popup.setAttribute("type", 'autocomplete-richlistbox');
-    this.popup.setAttribute('id', 'PopupAutoCompleteRichResultUnivSearch');
-    this.popup._appendCurrentResult = function() {
-      console.log('popup._appendCurrentResult');
-    };
-    this.popup.openPopup = function() {
-      console.log('openPopup called inside popup inside addon');
-    };
-    this.popup._invalidate = function() {
-      console.log('_invalidate called inside popup inside addon');
-    };
-    this.popup.openAutocompletePopup = function() {
-      console.log('openAutocompletePopup called inside addon');
-    };
-    this.popupParent = doc.getElementById('PopupAutoCompleteRichResult').parentElement;
-    this.popupParent.appendChild(this.popup);
-
-    this._autocompletepopup = this.urlbar.getAttribute('autocompletepopup');
-    this.urlbar.setAttribute('autocompletesearch', 'univ-search-results');
-
-    // reload the urlbar element
-    win.setTimeout(function() {
-      console.log('inside setTimeout callback');
-      this.urlbar && this.urlbar.parentNode &&
-      this.urlbar.parentNode.insertBefore(this.urlbar, this.urlbar.nextSibling);
-    }.bind(this), 0);
 
 
-  },
-  onLoaded: function() {
-    console.log('entering onLoaded');
-    // TODO NEXT: inject the frame script into the frame
-    // set up messaging with the frame script
-    // store an object pointer to the message channel
-    console.log('exiting onLoaded');
-  },
-  // called by XBL when the popup is instantiated
-  renderPopupContents: function(el) {
-    console.log('renderPopupContents');
-  },
-  handleEvent: function(evt) {
-    console.log('caught an event: ' + evt.type);
-  },
-  goButtonClick: function(evt) {
-    console.log('go button was clicked');
+// 1. Extension.load: get a window enumerator, and load the code into each window.
+function load() {
+  var enumerator = Services.wm.getEnumerator('navigator:browser');
+  while (enumerator.hasMoreElements()) {
+    var win = enumerator.getNext();
+    loadIntoWindow(win);
   }
+  Services.ww.registerNotification(function(win, topic) {
+    if (topic == 'domwindowopened') {
+      win.addEventListener('load', function loader() {
+        win.removeEventListener('load', loader, false); 
+        if (win.location.href == 'chrome://browser.content/browser.xul') {
+          loadIntoWindow(win);
+        }
+      }, false);
+    }
+  });
 };
 
-// nsIWindowMediatorListener: onOpenWindow, onCloseWindow, onWindowTitleChange
-// TODO: should this just be part of the UniversalSearch object? "when your window is ready, render yourself into it"
-var mediatorListener = {
-  onOpenWindow: function(win) {
-    console.log('onOpenWindow');
-    var domWindow = win.QueryInterface(Ci.nsIInterfaceRequestor)
-                       .getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-    domWindow.addEventListener("load", this.onDOMWindowLoaded.bind(this, domWindow));
-  },
-  onDOMWindowLoaded: function(domWindow) {
-    domWindow.removeEventListener("load", this.onDOMWindowLoaded.bind(this, domWindow), false);
-    this.render(domWindow);
-  },
-  onCloseWindow: function(win) {
-    console.log('onCloseWindow');
-    this.derender(win);
-  },
-  onWindowTitleChange: function(win, title) {
-    // no-op 
-  },
-  render: function(win) {
-    // TODO: it looks like the XUL window is not writable. so I guess instead of
-    //       having a global on the window, I'll just have globals in here?
-    var univSearch = new UniversalSearch();
-    univSearch.render(win);
-  },
-  derender: function(win) {
-    // probably should actually fire a shutdown signal,
-    // pass a shutdown promise,
-    // every piece of the app shuts itself down then resolves its bit,
-    // when the base promise resolves, actually delete win.LOL.
-  }
+var loadIntoWindow = function(win) {
+  // use Services.scriptloader.loadSubScript to load any addl scripts.
+  // here, though, we'll just inline everything.
+
+  // load the CSS into the document. not using the stylesheet service.
+  var stylesheet = win.document.createElementNS('http://www.w3.org/1999/xhtml', 'h:link');
+  stylesheet.rel = 'stylesheet';
+  stylesheet.href = 'chrome://universalsearch/skin/binding.css';
+  stylesheet.type = 'text/css';
+  stylesheet.style.display = 'none';
+  win.document.documentElement.appendChild(stylesheet);
+
+  // create the popup and append it to the dom.
+  var popup = win.document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "panel");
+  popup.setAttribute("type", 'autocomplete-richlistbox');
+  popup.setAttribute("id", 'PopupAutoCompleteRichResultUnivSearch');
+  popup.setAttribute("noautofocus", 'true');
+  win.document.getElementById('PopupAutoCompleteRichResult').parentElement.appendChild(popup);
+
+  // grab node pointers and swap the popup into the DOM.
+  FOO.urlbar = win.document.getElementById('urlbar');
+  FOO.popup = popup;
+  FOO._autocompletepopup = FOO.urlbar.getAttribute('autocompletepopup');
+  FOO.urlbar.setAttribute('autocompletepopup', 'PopupAutoCompleteRichResultUnivSearch');
+  
 };
+
+FOO.main = function(browserEl) {
+};
+
+
+
+
 
 function startup(aData, aReason) {
-  // "inject code into all windows and listen for new windows" code courtesy of Mossop
-  // http://www.oxymoronical.com/blog/2011/01/Playing-with-windows-in-restartless-bootstrapped-extensions
-  var winMediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
-
-  winMediator.addListener(mediatorListener);
-
-  var windows = winMediator.getEnumerator('navigator:browser');
-  while (windows.hasMoreElements()) {
-    let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
-    // it seems like the dom is sometimes not yet ready, handle this for render
-    console.log('iterating over windows. the readystate is ' + domWindow.document && domWindow.document.readyState);
-    if (domWindow.document.readyState == 'complete') {
-      console.log('startup found a ready window, rendering into it');
-      mediatorListener.render(domWindow);
-    } else {
-      console.log('startup found a non-ready window, adding an onload handler');
-      // mediatorListener handles adding the 'load' listener
-      mediatorListener.onOpenWindow(domWindow);
-    }
-  }
-  console.log('exiting universal-search-addon startup');
-};
-
-var shutdown = function(aData, aReason) {
-  // no teardown is needed for a normal shutdown
-  if (reason == APP_SHUTDOWN) { return; }
-
-  var winMediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
-  winMediator.removeListener(mediatorListener);
+load();
 };
 
 function install() { console.log('installing universal-search-addon') }
