@@ -42,7 +42,7 @@ var loadIntoWindow = function(win) {
   // load the CSS into the document. not using the stylesheet service.
   var stylesheet = win.document.createElementNS('http://www.w3.org/1999/xhtml', 'h:link');
   stylesheet.rel = 'stylesheet';
-  stylesheet.href = 'chrome://universalsearch/skin/binding.css';
+  stylesheet.href = 'chrome://universalsearch-root/content/skin/binding.css';
   stylesheet.type = 'text/css';
   stylesheet.style.display = 'none';
   win.document.documentElement.appendChild(stylesheet);
