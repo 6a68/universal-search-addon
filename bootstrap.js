@@ -5,8 +5,6 @@ const { classes: Cc, interfaces: Ci, utils: Cu, manager: Cm } = Components;
 Cu.import('resource://gre/modules/XPCOMUtils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Main',
   'chrome://universalsearch-lib/content/main.js');
-var log = Cc['@mozilla.org/consoleservice;1'].getService(Ci.nsIConsoleService),
-
 
 function startup(data, reason) {
   Main.load();

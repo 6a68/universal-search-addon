@@ -13,7 +13,8 @@
        <constructor>
         <![CDATA[
           this.browser = document.getAnonymousElementByAttribute(this, 'anonid', 'infect-and-destroy');
-          FOO.main(this.browser);
+          // TODO: do we really need to do this?
+          US.setBrowser(this.browser);
         ]]>
       </constructor>
       <property name="selectedIndex"
