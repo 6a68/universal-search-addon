@@ -64,20 +64,13 @@ function load() {
     console.log('iterating windows');
       win.addEventListener('load', function loader() {
         win.removeEventListener('load', loader, false); 
-        if (win.location.href == 'chrome://browser.content/browser.xul') {
+        if (win.location.href == 'chrome://browser/content/browser.xul') {
           loadIntoWindow(win);
         }
       }, false);
     }
   });
 };
-
-
-FOO.main = function(browserEl) {
-};
-
-
-
 
 
 function startup(aData, aReason) {
