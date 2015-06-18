@@ -1,4 +1,4 @@
-#PopupAutoCompleteRichResult.PopupAutoCompleteRichResultUnivSearch {
+#PopupAutoCompleteRichResultUnivSearch {
   -moz-binding: url("chrome://universalsearch/content/content.xml#autocomplete-rich-result-popup-univ-search");
   min-height: 303px;
   overflow: hidden;
