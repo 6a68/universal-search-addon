@@ -39,10 +39,10 @@ var loadIntoWindow = function(win) {
   win.document.getElementById('PopupAutoCompleteRichResult').parentElement.appendChild(popup);
 
   // grab node pointers and swap the popup into the DOM.
-  FOO.urlbar = win.document.getElementById('urlbar');
-  FOO.popup = popup;
-  FOO._autocompletepopup = FOO.urlbar.getAttribute('autocompletepopup');
-  FOO.urlbar.setAttribute('autocompletepopup', 'PopupAutoCompleteRichResultUnivSearch');
+  win.FOO.urlbar = win.document.getElementById('urlbar');
+  win.FOO.popup = popup;
+  win.FOO._autocompletepopup = win.FOO.urlbar.getAttribute('autocompletepopup');
+  win.FOO.urlbar.setAttribute('autocompletepopup', 'PopupAutoCompleteRichResultUnivSearch');
   
 };
 
