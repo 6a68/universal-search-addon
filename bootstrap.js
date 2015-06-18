@@ -9,33 +9,17 @@ var Cu = Components.utils;
 Cu.import('resource://gre/modules/XPCOMUtils.jsm');
 Cu.import('resource://gre/modules/Services.jsm');
 
-if(window.FOO === undefined) {
-    Object.defineProperty( window, 'FOO', {configurable:true, value:{}});
-} else {
-    window.FOO = window.FOO || {};
-}
-
-
-// 1. Extension.load: get a window enumerator, and load the code into each window.
-function load() {
-  var enumerator = Services.wm.getEnumerator('navigator:browser');
-  while (enumerator.hasMoreElements()) {
-    var win = enumerator.getNext();
-    loadIntoWindow(win);
-  }
-  Services.ww.registerNotification(function(win, topic) {
-    if (topic == 'domwindowopened') {
-      win.addEventListener('load', function loader() {
-        win.removeEventListener('load', loader, false); 
-        if (win.location.href == 'chrome://browser.content/browser.xul') {
-          loadIntoWindow(win);
-        }
-      }, false);
-    }
-  });
-};
 
 var loadIntoWindow = function(win) {
+  console.log('loadIntoWindow start');
+
+  // set the app global per-window
+  if(win.FOO === undefined) {
+      Object.defineProperty(win, 'FOO', {configurable:true, value:{}});
+  } else {
+      win.FOO = win.FOO || {};
+  }
+
   // use Services.scriptloader.loadSubScript to load any addl scripts.
   // here, though, we'll just inline everything.
 
@@ -62,6 +46,33 @@ var loadIntoWindow = function(win) {
   
 };
 
+// 1. Extension.load: get a window enumerator, and load the code into each window.
+function load() {
+  console.log('load start');
+  var enumerator = Services.wm.getEnumerator('navigator:browser');
+  while (enumerator.hasMoreElements()) {
+    console.log('enumerator has a window');
+    var win = enumerator.getNext();
+    try { 
+      loadIntoWindow(win);
+    } catch (ex) {
+      console.log('load into window failed: ', ex);
+    }
+  }
+  Services.ww.registerNotification(function(win, topic) {
+    if (topic == 'domwindowopened') {
+    console.log('iterating windows');
+      win.addEventListener('load', function loader() {
+        win.removeEventListener('load', loader, false); 
+        if (win.location.href == 'chrome://browser.content/browser.xul') {
+          loadIntoWindow(win);
+        }
+      }, false);
+    }
+  });
+};
+
+
 FOO.main = function(browserEl) {
 };
 
@@ -70,6 +81,7 @@ FOO.main = function(browserEl) {
 
 
 function startup(aData, aReason) {
+console.log('startup start');
 load();
 };
 
