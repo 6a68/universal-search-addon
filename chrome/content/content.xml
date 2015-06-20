@@ -5,7 +5,7 @@
           xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
           xmlns:xbl="http://www.mozilla.org/xbl">
   <binding id="autocomplete-rich-result-popup-univ-search" extends="chrome://global/content/bindings/autocomplete.xml#autocomplete-rich-result-popup">
-    <content ignorekeys="true" level="top" consumeoutsideclicks="false">
+    <content ignorekeys="false" level="top" consumeoutsideclicks="false">
       <xul:browser anonid="infect-and-destroy" type="content" height="416" minheight="416" flex="1" />
     </content>
 
