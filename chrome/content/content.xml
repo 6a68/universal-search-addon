@@ -21,7 +21,7 @@
                 onget="return 0;">
         <setter>
           <![CDATA[
-            //mask default FF
+            // override inherited method
           ]]>
         </setter>
       </property>
@@ -52,7 +52,16 @@
       <method name="_appendCurrentResult">
         <body>
           <![CDATA[
-            //this method should be patched in UI.js
+            // override inherited method
+          ]]>
+        </body>
+      </method>
+
+      <method name="onKeyPress">
+        <parameter name="aEvent">
+        <body>
+          <![CDATA[
+            // override inherited method
           ]]>
         </body>
       </method>
