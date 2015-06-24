@@ -6,6 +6,11 @@ Cu.import('resource://gre/modules/XPCOMUtils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Main',
   'chrome://universalsearch-lib/content/main.js');
 
+// we need an addon global
+if ('undefined' == typeof US) {
+  var US = {};
+}
+
 function startup(data, reason) {
   Main.load();
 }
