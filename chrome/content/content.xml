@@ -58,6 +58,23 @@
       </method>
 
     </implementation>
+    <handlers>
+      <handler event="mousemove">
+        <![CDATA[
+          // attempt to override mystery fucking XUL behavior
+        ]]>
+      </handler>
+      <handler event="popuphiding">
+        <![CDATA[
+          // attempt to override mystery fucking XUL behavior
+        ]]>
+      </handler>
+      <handler event="popupshowing">
+        <![CDATA[
+          // attempt to override mystery fucking XUL behavior
+        ]]>
+      </handler>
+    </handlers>
   </binding>
 </bindings>
 
