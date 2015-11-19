@@ -45,6 +45,8 @@ Transport.prototype = {
     this.app.broker.subscribe('popup::popupOpen', this.onPopupOpen, this);
     this.app.broker.subscribe('popup::suggestedSearchResults',
                                this.onSuggestedSearchResults, this);
+    this.app.broker.subscribe('popup::unifiedCompleteResults',
+                               this.onUnifiedCompleteResults, this);
     this.app.broker.subscribe('urlbar::navigationalKey',
                                this.onNavigationalKey, this);
     this.app.broker.subscribe('urlbar::printableKey',
@@ -65,6 +67,8 @@ Transport.prototype = {
     this.app.broker.unsubscribe('popup::popupOpen', this.onPopupOpen, this);
     this.app.broker.unsubscribe('popup::suggestedSearchResults',
                                  this.onSuggestedSearchResults, this);
+    this.app.broker.unsubscribe('popup::unifiedCompleteResults',
+                               this.onUnifiedCompleteResults, this);
     this.app.broker.unsubscribe('urlbar::navigationalKey',
                                  this.onNavigationalKey, this);
     this.app.broker.unsubscribe('urlbar::printableKey',
@@ -89,6 +93,9 @@ Transport.prototype = {
     this._lastAutocompleteSearchTerm = currentInput;
     this.sendMessage('autocomplete-search-results', msg);
   },
+  onUnifiedCompleteResults: function(msg) {
+    this.sendMessage('unified-complete-results', msg);
+  },
   onSuggestedSearchResults: function(msg) {
     const currentInput = msg && msg.term;
     if (currentInput && currentInput === this._lastSuggestedSearchTerm) {
@@ -97,6 +104,7 @@ Transport.prototype = {
     this._lastSuggestedSearchTerm = currentInput;
     this.sendMessage('suggested-search-results', { results: msg });
   },
+
   onNavigationalKey: function(msg) {
     this.sendMessage('navigational-key', msg);
   },

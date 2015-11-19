@@ -12,6 +12,8 @@ const EXPORTED_SYMBOLS = ['Popup']; // eslint-disable-line no-unused-vars
 Cu.import('resource://gre/modules/XPCOMUtils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services',
   'resource://gre/modules/Services.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'PromiseUtils',
+  'resource://gre/modules/PromiseUtils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'PrivateBrowsingUtils',
   'resource://gre/modules/PrivateBrowsingUtils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'SearchSuggestionController',
@@ -34,6 +36,8 @@ function Popup(window, appGlobal) {
   this.isPinned = false;
 
   this.inPrivateContext = PrivateBrowsingUtils.isWindowPrivate(this.win);
+
+  this.results = [];
 }
 Popup.prototype = {
   constructor: Popup,
@@ -135,9 +139,11 @@ Popup.prototype = {
     return aURL + (aURL.contains('#') ? '&' : '#') +
            '-moz-resolution=' + width + ',' + height;
   },
-  // TODO: use UnifiedComplete instead of calling these services separately (#114)
   _appendCurrentResult: function() {
     const autocompleteResults = this._getAutocompleteSearchResults();
+    this._waitWhat();
+    // const unifiedResults = this._getUnifiedSearchResults();
+    // unifiedResults.then(blah => { console.error('unified results returned stuff!',blah) });
     if (this.inPrivateContext) {
       this.app.broker.publish('popup::autocompleteSearchResults', autocompleteResults);
       this.app.broker.publish('popup::suggestedSearchResults', []);
@@ -154,6 +160,61 @@ Popup.prototype = {
         this.app.broker.publish('popup::suggestedSearchResults', []);
       });
     }
+  },
+  onSearchResult: function(aSearch, aResult) {
+    // we treat aResult in exactly the same way we treated controller inside
+    // _getAutocompleteSearchResults: it implements the same interface.
+    // so, just lift that section of code. later we'll DRY it up.
+    const maxResults = 10;
+
+    // bail unless the search is done, we don't want a single ongoing result, we want one final ready thing
+    if (aResult.searchResult !== aResult.RESULT_SUCCESS) {
+      return;
+    }
+
+    // the searchStatus is not a reliable way to decide when/what to send.
+    // instead, we'll just check the number of results and act accordingly.
+    if (aResult.matchCount) {
+      // Start with i = 1, because the first result returned by unified
+      // complete is always either "search for <non-url-like thing you typed>"
+      // or "open <url-like thing you typed>"
+      for (let i = 1; i < Math.min(maxResults, aResult.matchCount); i++) {
+        const chromeImgLink = this._getImageURLForResolution(this.win, aResult.getImageAt(i), 16, 16);
+        // if we have a favicon link, it'll be of the form "moz-anno:favicon:http://link/to/favicon"
+        // else, it'll be a chrome:// link to the default favicon img
+        const imgMatches = chromeImgLink.match(/^moz-anno\:favicon\:(.*)/);
+
+        // We've hacked the finalCompleteValue to be of the form:
+        //     'final-complete-value' + '::' + 'frecency-value'
+        // So, strip out the frecency-value part, and convert from string
+        // back to integer. (The finalCompleteValue seems to be a url, usually,
+        // and we never need or use it.)
+        let frecency = aResult.getFinalCompleteValueAt(i).split('::')[1] || null;
+        if (frecency) {
+          frecency = parseInt(frecency, 10);
+        }
+
+        this.results.push({
+          url: Components.classes['@mozilla.org/intl/texttosuburi;1'].
+                getService(Components.interfaces.nsITextToSubURI).
+                unEscapeURIForUI('UTF-8', aResult.getValueAt(i)),
+          image: imgMatches ? imgMatches[1] : null,
+          title: aResult.getCommentAt(i),
+          type: aResult.getStyleAt(i),
+          text: aResult.searchString && aResult.searchString.trim(),
+          frecency: frecency
+        });
+      }
+    }
+    this.app.broker.publish('popup::unifiedCompleteResults', this.results);
+    return this.results;
+  },
+  _waitWhat: function() {
+    // TODO: setTimeout to capture the most-recently-typed char?
+    let query = this.app.gBrowser.userTypedValue;
+    // reset the global results thing. question: is it getting overwritten each time? is that why I only see one result?
+    this.results = [];
+    this.app.unifiedComplete.startSearch(query, 'enable-actions', null, this);
   },
   _getAutocompleteSearchResults: function() {
     const controller = this.popup.mInput.controller;

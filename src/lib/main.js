@@ -59,6 +59,7 @@ const loadIntoWindow = function(win) {
   Cu.import('chrome://universalsearch-lib/content/Transport.js', app);
   Cu.import('chrome://universalsearch-lib/content/ui/Popup.js', app);
   Cu.import('chrome://universalsearch-lib/content/ui/Urlbar.js', app);
+  Cu.import('chrome://universalsearch-lib/content/PlacesSearch.js', app);
 
   // load the CSS into the document. not using the stylesheet service.
   const stylesheet = document.createElementNS('http://www.w3.org/1999/xhtml', 'h:link');
@@ -118,6 +119,7 @@ const unloadFromWindow = function(win) {
   Cu.unload('chrome://universalsearch-lib/content/Transport.js', app);
   Cu.unload('chrome://universalsearch-lib/content/ui/Popup.js', app);
   Cu.unload('chrome://universalsearch-lib/content/ui/Urlbar.js', app);
+  Cu.unload('chrome://universalsearch-lib/content/PlacesSearch.js', app);
 
   // delete any dangling refs
   delete win.US;
