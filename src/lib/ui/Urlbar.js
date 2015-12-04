@@ -212,6 +212,7 @@ Urlbar.prototype = {
     });
   },
   onKeyDown: function(evt) {
+    this.win.performance.mark('keydown');
     if (evt.key === 'Backspace') {
       // Backspace only closes the popup if the urlbar has been emptied out.
       // We don't know if the urlbar has handled the backspace yet, so wait

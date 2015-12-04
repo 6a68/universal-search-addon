@@ -158,12 +158,40 @@ Popup.prototype = {
     this.app.broker.publish('popup::popupClose');
   },
   _appendCurrentResult: function() {
+    // TODO this is really the wrong way to do this; if any promise fails to resolve, the marks/measures
+    // aren't cleared, which happens a lot when you type out a longer word or phrase. but it's a first 
+    // step and we can get better quickly.
+    this.win.performance.mark('places_start');
     this._getPlacesSuggestions().then((placesResults) => {
+      this.win.performance.mark('places_done');
+      this.win.performance.measure('total_time_places', 'places_start', 'places_done');
       if (this.inPrivateContext) {
         this.app.broker.publish('popup::autocompleteSearchResults', placesResults);
         this.app.broker.publish('popup::suggestedSearchResults', []);
       } else {
+        this.win.performance.mark('search_start');
         this._getSearchSuggestions().then((searchSuggestions) => {
+          this.win.performance.mark('search_done');
+          this.win.performance.measure('total_time_search_suggestions', 'search_start', 'search_done');
+
+          this.win.performance.mark('sending_data');
+          this.win.performance.measure('total_time_to_data', 'keydown', 'sending_data');
+          const elapsedTime = this.win.performance.getEntriesByName('total_time_to_data');
+          console.log('total time to data: ', elapsedTime[0].duration);
+          const placesTime = this.win.performance.getEntriesByName('total_time_places');
+          console.log('total time for places query: ', placesTime[0].duration);
+          const searchTime = this.win.performance.getEntriesByName('total_time_search_suggestions');
+          console.log('total time for search query: ', searchTime[0].duration);
+
+          // this one is really interesting: time between keydown and _appendCurrentResult.
+          // there's literally no good reason for this delay, whatever it is.
+          this.win.performance.measure('key_handling_delay', 'keydown', 'places_start');
+          const wastedTime = this.win.performance.getEntriesByName('key_handling_delay');
+          console.log('total time wasted between keydown and _appendCurrentResult: ', wastedTime[0].duration);
+
+          this.win.performance.clearMarks();
+          this.win.performance.clearMeasures();
+
           this.app.broker.publish('popup::autocompleteSearchResults', placesResults);
           delete searchSuggestions.formHistoryResult;
           this.app.broker.publish('popup::suggestedSearchResults', searchSuggestions);
