@@ -235,7 +235,7 @@ PlacesSearch.prototype = {
         processed.push(item);
       } else {
         // only keeping this branch of the conditional for quality testing
-        console.log('excluding a search result from the awesomebar: ', item.url);
+        // console.log('excluding a search result from the awesomebar: ', item.url);
       }
     }
     return yield processed;

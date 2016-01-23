@@ -17,8 +17,9 @@ XPCOMUtils.defineLazyModuleGetter(this, 'console',
   'resource://gre/modules/devtools/Console.jsm');
 
 function Urlbar(window, appGlobal) {
-  this.win = window;
   this.app = appGlobal;
+  this.win = window;
+  this.perf = window.performance;
   this.urlbarUpdateTimer = null;
   this.urlbarNavigateTimer = null;
   // replaced handlers and elements
@@ -196,6 +197,7 @@ Urlbar.prototype = {
   _escKeys: ['ArrowLeft', 'ArrowRight', 'Escape'],
   _navKeys: ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Tab'],
   _sendNavigationalKey: function(evt) {
+    this.app.times['sendNavigationalKey'] = Math.round(this.perf.now() - this.app.startTime);
     const data = {
       key: evt.key,
       shiftKey: evt.shiftKey
@@ -204,7 +206,9 @@ Urlbar.prototype = {
   },
   _sendPrintableKey: function() {
     // Wait a turn to reliably get the updated urlbar contents.
+    this.app.times['sendPrintableKey'] = Math.round(this.perf.now() - this.app.startTime);
     this.win.setTimeout(() => {
+      this.app.times['sendPrintableKey callback'] = Math.round(this.perf.now() - this.app.startTime);
       const data = {
         query: this.app.gBrowser.userTypedValue
       };
@@ -212,6 +216,8 @@ Urlbar.prototype = {
     });
   },
   onKeyDown: function(evt) {
+    // perf measurement starts now
+    this.app.startTime = this.perf.now();
     if (evt.key === 'Backspace') {
       // Backspace only closes the popup if the urlbar has been emptied out.
       // We don't know if the urlbar has handled the backspace yet, so wait

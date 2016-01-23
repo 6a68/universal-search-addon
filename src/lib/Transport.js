@@ -102,7 +102,7 @@ Transport.prototype = {
     };
     // Super helpful for debugging:
     try {
-      console.log('sending the ' + evt + ' message to content:' + JSON.stringify(msg));
+      // console.log('sending the ' + evt + ' message to content:' + JSON.stringify(msg));
     } catch (ex) {} // eslint-disable-line
     const ctx = {
       browser: this.app.browser,

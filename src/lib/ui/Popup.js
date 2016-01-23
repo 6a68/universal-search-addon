@@ -23,6 +23,7 @@ XPCOMUtils.defineLazyModuleGetter(this, 'Task',
 
 function Popup(window, appGlobal) {
   this.win = window;
+  this.perf = window.performance;
   this.app = appGlobal;
 
   const prefBranch = Cc['@mozilla.org/preferences-service;1']
@@ -154,10 +155,18 @@ Popup.prototype = {
   onPrintableKey: function(data) {
     const searchTerm = data.query;
 
+    this.app.times['Popup.onPrintableKey.before.searches'] = Math.round(this.perf.now() - this.app.startTime);
     Promise.all([
       this._getPlacesSuggestions(searchTerm),
       this._getSearchSuggestions(searchTerm)
     ]).then((results) => {
+      // measure and report, then reset this.app.times
+      this.app.times['Popup.onPrintableKey.after.searches'] = Math.round(this.perf.now() - this.app.startTime);
+      for (var time in this.app.times) {
+        console.log(time, ': ', this.app.times[time]);
+      }
+      this.app.times = {};
+
       const placesResults = results[0];
       const searchSuggestions = results[1];
       this.app.broker.publish('popup::autocompleteSearchResults', placesResults);
@@ -170,9 +179,13 @@ Popup.prototype = {
     });
   },
   _getPlacesSuggestions: Task.async(function* (searchTerm) {
-    return yield this.app.placesSearch.search(searchTerm);
+    this.app.times['Popup - before placesSearch.search'] = Math.round(this.perf.now() - this.app.startTime);
+    let searchResults = yield this.app.placesSearch.search(searchTerm);
+    this.app.times['Popup - after placesSearch.search'] = Math.round(this.perf.now() - this.app.startTime);
+    return yield searchResults;
   }),
   _getSearchSuggestions: Task.async(function* (searchTerm) {
+    this.app.times['Popup - before fetching searchSuggestions'] = Math.round(this.perf.now() - this.app.startTime);
     // Search-related constants; see SearchSuggestionController.jsm for more.
     const MAX_LOCAL_SUGGESTIONS = 3;
     const MAX_SUGGESTIONS = 6;
@@ -211,6 +224,7 @@ Popup.prototype = {
       Cu.reportError(ex);
     }
 
+    this.app.times['Popup - after fetching searchSuggestions'] = Math.round(this.perf.now() - this.app.startTime);
     return yield suggestions;
   })
 };

@@ -54,6 +54,11 @@ const loadIntoWindow = function(win) {
                        .getService(Ci.nsIVersionComparator);
   app.hasUnifiedComplete = versionChecker.compare(appInfo.version, '43') >= 0;
 
+  // expose a top-level timer on app to measure transit time
+  app.times = {};
+  // initialize this to a throwaway value; we'll overwrite it as keys come in
+  app.startTime = win.performance.now();
+
   // load all scripts into the window
   Cu.import('chrome://universalsearch-lib/content/Broker.js', app);
   Cu.import('chrome://universalsearch-lib/content/Transport.js', app);
